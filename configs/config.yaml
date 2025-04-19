@@ -1,0 +1,41 @@
+batch_size: 1000
+epochs: 100
+
+logdir: logs
+run_name: test
+
+# model:
+#   _target_: models.linear.Linear
+#   insize: 2
+#   outsize: 1
+#   classification: true
+
+model:
+  _target_: models.mlp.MLP
+  insize: 2
+  hidden_sizes: [64, 64]
+  outsize: 1
+  classification: true
+
+
+train_dataset:
+  _target_: dataset.dataset.InfixEquivalanceDataset
+  operator: "=="
+  # operator: "<"
+  equal_p: 0.0
+  _len: 10_000  # 10_000 /feels right/
+
+dev_dataset:
+  _target_: dataset.dataset.InfixEquivalanceDataset
+  equal_p: 0.0
+  _len: 200
+
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 0.01
+  # betas: [0.9, 0.999,]
+  # eps: 1e-8
+  # weight_decay: 1e-2
+  # amsgrad: False
+  # maximize: False
+  # fused: Optional[bool]=None
