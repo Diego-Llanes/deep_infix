@@ -1,5 +1,12 @@
+import torch
+from torchtyping import TensorType
+
 from typing import Union
 from pathlib import Path
+
+
+def to_tensor(*args) -> TensorType["args"]:
+    return torch.Tensor([x for x in args])
 
 
 def make_parents(path: Union[Path, str]) -> Path:

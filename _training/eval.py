@@ -7,7 +7,8 @@ from collections import OrderedDict
 from typing import Any, Optional, List, Type
 import os
 
-from dataset.dataset import InfixEquivalanceDataset, encoding_func, scale_pair
+from dataset.dataset import InfixEquivalanceDataset, list_encoding_func, scale_pair
+from utils import to_tensor
 
 
 def get_input(
@@ -30,10 +31,6 @@ def get_input(
         return val
 
 
-def torch_tensor(*args) -> TensorType["args"]:
-    return torch.Tensor([x for x in args])
-
-
 def test_model(model: nn.Module, operators: List[Any]):
     lhs = get_input("LHS: ", float)
     rhs = get_input("RHS: ", float)
@@ -43,9 +40,9 @@ def test_model(model: nn.Module, operators: List[Any]):
     print(expr)
 
     lhs, rhs, _ = scale_pair(lhs, rhs)
-    operator = encoding_func(operator, operators)
+    operator = list_encoding_func(operator, operators)
 
-    x = torch_tensor(lhs, rhs, operator).unsqueeze(0)
+    x = to_tensor(lhs, rhs, operator).unsqueeze(0)
     print("we predict the answer is....")
     print(f"{expr}: {bool(round(model(x).item()))}")
     print("Were we right? be honest")

@@ -8,12 +8,12 @@ from functools import partial
 import os
 from pathlib import Path
 
-from runner.runner import Runner
-from dataset.dataset import InfixEquivalanceDataset
-from models.linear import Linear
-from utils import make_parents
-from viz import plot_losses
-from color import Fore, Back, Style
+from .runner.runner import Runner
+from .dataset.dataset import InfixEquivalanceDataset
+from .models.linear import Linear
+from .utils import make_parents
+from .viz import plot_losses
+from .color import Fore, Back, Style
 
 
 @sk.unlock("configs/config.yaml")

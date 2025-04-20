@@ -5,6 +5,8 @@ from torchtyping import TensorType, patch_typeguard
 from typing import Tuple, Union, Optional, List, Any
 import random
 
+from ..utils import to_tensor
+
 
 
 def scale_pair(left: float, right: float, lo: float = -1.0, hi: float = 1.0,) -> Tuple[float, float, callable]:
@@ -28,7 +30,7 @@ def scale_pair(left: float, right: float, lo: float = -1.0, hi: float = 1.0,) ->
     )
 
 
-def encoding_func(selection: Any, options: List[Any]) -> float:
+def list_encoding_func(selection: Any, options: List[Any]) -> float:
     # Try to kee the value centered around zero
     return float(options.index(selection)) - (0.5 * len(options))
 
@@ -83,23 +85,21 @@ class InfixEquivalanceDataset(Dataset):
 
         left, right, inv = self.norm_func(left, right)
 
-        def torch_tensor(*args) -> TensorType["args"]:
-            return torch.Tensor([x for x in args])
 
         operator = self.operator if not self.operator is None else random.choice(self.infix_equivalances)
 
         if self.encode_operator:
             # Append an encoding that represents the operator 
-            x = torch_tensor(
+            x = to_tensor(
                 left,
                 right,
-                encoding_func(operator, self.infix_equivalances),
+                list_encoding_func(operator, self.infix_equivalances),
             )
         else:
-            x = torch_tensor(left, right)
+            x = to_tensor(left, right)
 
         # The label is just applying the infix operator
-        y = torch_tensor(float(eval(f"{left}{operator}{right}")))
+        y = to_tensor(float(eval(f"{left}{operator}{right}")))
 
         return x, y
 

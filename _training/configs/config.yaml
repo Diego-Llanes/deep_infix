@@ -6,7 +6,7 @@ logdir: logs
 run_name: test
 
 model:
-  _target_: models.mlp.MLP
+  _target_: training.models.mlp.MLP
   insize: 3 # left, right, operator_encoding
   hidden_sizes: [64]
   outsize: 1
@@ -17,13 +17,13 @@ train_dataset:
   # operator: "=="
   # operator: "<"
   operator: null
-  _target_: dataset.dataset.InfixEquivalanceDataset
+  _target_: training.dataset.dataset.InfixEquivalanceDataset
   encode_operator: true
   equal_p: 0.5
   _len: 10_000  # 10_000 /feels right/
 
 dev_dataset:
-  _target_: dataset.dataset.InfixEquivalanceDataset
+  _target_: training.dataset.dataset.InfixEquivalanceDataset
   encode_operator: true
   equal_p: 0.5
   _len: 200
