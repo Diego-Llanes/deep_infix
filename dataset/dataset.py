@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset
 from torchtyping import TensorType, patch_typeguard
 
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 import random
 
 
@@ -36,14 +36,15 @@ class InfixEquivalanceDataset(Dataset):
 
     def __init__(
         self,
-        operator: str = "==",
+        operator: Optional[str] = None,
+        encode_operator: bool = True,
         equal_p: float = 0.2,
         _len: int = 1_000,  # 1_000 /feels right/
         _norm_func: callable = scale_pair,
         _min_num: int = torch.iinfo(torch.int32).min,
         _max_num: int = torch.iinfo(torch.int32).max,
     ) -> None:
-        infix_equivalances = [
+        self.infix_equivalances = [
             "<",
             ">",
             "==",
@@ -51,9 +52,9 @@ class InfixEquivalanceDataset(Dataset):
             "<=",
             ">=",
         ]
-        if not operator in infix_equivalances:
+        if (not operator is None) and (not operator in self.infix_equivalances):
             raise ValueError(
-                f"Please use one of the following infix equivalence operators: \"{'\", \"'.join(infix_equivalances)}\"."
+                f"Please use one of the following infix equivalence operators: \"{'\", \"'.join(self.infix_equivalances)}\"."
             )
         self.operator = operator
         self.norm_func = _norm_func
@@ -62,6 +63,8 @@ class InfixEquivalanceDataset(Dataset):
         self._min_num = _min_num
         self._max_num = _max_num
         self.equal_p = equal_p
+
+        self.encode_operator = encode_operator
 
     def __getitem__(
         self,
@@ -78,8 +81,21 @@ class InfixEquivalanceDataset(Dataset):
         def torch_tensor(*args) -> TensorType["args"]:
             return torch.Tensor([x for x in args])
 
-        x = torch_tensor(left, right)
-        y = torch_tensor(float(eval(f"{left}{self.operator}{right}")))
+        operator = self.operator if not self.operator is None else random.choice(self.infix_equivalances)
+
+        if self.encode_operator:
+            # Append something that represents the operater and try to keep
+            # that encoding centered around zero
+            x = torch_tensor(
+                left,
+                right,
+                float(self.infix_equivalances.index(operator)) - (0.5 * len(self.infix_equivalances)),
+            )
+        else:
+            x = torch_tensor(left, right)
+
+        # The label is just applying the infix operator
+        y = torch_tensor(float(eval(f"{left}{operator}{right}")))
 
         return x, y
 

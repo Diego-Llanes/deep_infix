@@ -1,33 +1,31 @@
 batch_size: 1000
-epochs: 100
+epochs: 10000
+patience: 200
 
 logdir: logs
 run_name: test
 
-# model:
-#   _target_: models.linear.Linear
-#   insize: 2
-#   outsize: 1
-#   classification: true
-
 model:
   _target_: models.mlp.MLP
-  insize: 2
-  hidden_sizes: [64, 64]
+  insize: 3 # left, right, operator_encoding
+  hidden_sizes: [64]
   outsize: 1
   classification: true
 
 
 train_dataset:
-  _target_: dataset.dataset.InfixEquivalanceDataset
-  operator: "=="
+  # operator: "=="
   # operator: "<"
-  equal_p: 0.0
+  operator: null
+  _target_: dataset.dataset.InfixEquivalanceDataset
+  encode_operator: true
+  equal_p: 0.2
   _len: 10_000  # 10_000 /feels right/
 
 dev_dataset:
   _target_: dataset.dataset.InfixEquivalanceDataset
-  equal_p: 0.0
+  encode_operator: true
+  equal_p: 0.2
   _len: 200
 
 optimizer:

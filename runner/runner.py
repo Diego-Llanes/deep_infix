@@ -40,7 +40,7 @@ class Runner:
                     loss.backward()
                     self.optimizer.step()
                 cum_loss += loss
-                desc = f"loss: {loss:0.2f}" if epoch is None else f"Epoch: {epoch}, loss: {loss:0.2f}"
+                desc = f"loss: {loss:0.4f}" if epoch is None else f"Epoch: {epoch}, loss: {loss:0.4f}"
                 pbar.desc = desc
                 pbar.update()
 
