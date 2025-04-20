@@ -1,6 +1,6 @@
 batch_size: 1000
 epochs: 10000
-patience: 200
+patience: 50
 
 logdir: logs
 run_name: test
@@ -19,13 +19,13 @@ train_dataset:
   operator: null
   _target_: dataset.dataset.InfixEquivalanceDataset
   encode_operator: true
-  equal_p: 0.2
+  equal_p: 0.5
   _len: 10_000  # 10_000 /feels right/
 
 dev_dataset:
   _target_: dataset.dataset.InfixEquivalanceDataset
   encode_operator: true
-  equal_p: 0.2
+  equal_p: 0.5
   _len: 200
 
 optimizer:

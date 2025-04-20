@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset
 from torchtyping import TensorType, patch_typeguard
 
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, List, Any
 import random
 
 
@@ -26,6 +26,11 @@ def scale_pair(left: float, right: float, lo: float = -1.0, hi: float = 1.0,) ->
         (right - mn) * scale + lo,
         lambda val: (val - lo) / scale + mn,
     )
+
+
+def encoding_func(selection: Any, options: List[Any]) -> float:
+    # Try to kee the value centered around zero
+    return float(options.index(selection)) - (0.5 * len(options))
 
 
 class InfixEquivalanceDataset(Dataset):
@@ -84,12 +89,11 @@ class InfixEquivalanceDataset(Dataset):
         operator = self.operator if not self.operator is None else random.choice(self.infix_equivalances)
 
         if self.encode_operator:
-            # Append something that represents the operater and try to keep
-            # that encoding centered around zero
+            # Append an encoding that represents the operator 
             x = torch_tensor(
                 left,
                 right,
-                float(self.infix_equivalances.index(operator)) - (0.5 * len(self.infix_equivalances)),
+                encoding_func(operator, self.infix_equivalances),
             )
         else:
             x = torch_tensor(left, right)
