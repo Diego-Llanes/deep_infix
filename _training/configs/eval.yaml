@@ -1,8 +1,0 @@
-weights_path: logs/first_run/test_best_model.pt
-
-model:
-  _target_: models.mlp.MLP
-  insize: 3 # left, right, operator_encoding
-  hidden_sizes: [64]
-  outsize: 1
-  classification: true
